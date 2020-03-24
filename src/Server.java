@@ -8,40 +8,35 @@ import java.util.*;
 import java.net.*;
 
 // Server class
-public class Server
-{
-    public static void main(String[] args) throws IOException
-    {
+public class Server {
+    public static void main(String[] args) throws IOException {
         // server is listening on port 5056
         ServerSocket serverSocket = new ServerSocket(5000);
 
         // running infinite loop for getting
         // client request
-        while (true)
-        {
+        while (true) {
             Socket socket = null;
 
-            try
-            {
+            try {
                 // socket object to receive incoming client requests
                 socket = serverSocket.accept();
 
                 System.out.println("A new client is connected: " + socket);
 
                 // obtaining input and out streams
-                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream = socket.getOutputStream();
 
                 System.out.println("Creating new Thread for new Client...");
 
                 // create a new thread object
-                Thread thread = new ClientHandler(socket, dataInputStream, dataOutputStream);
+                Thread thread = new ClientHandler(socket, inputStream, outputStream);
 
                 // Invoking the start() method
                 thread.start();
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 assert socket != null;
                 socket.close();
                 e.printStackTrace();
@@ -51,92 +46,68 @@ public class Server
 }
 
 // ClientHandler class
-class ClientHandler extends Thread
-{
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-    private DateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
-    private final DataInputStream dataInputStream;
-    private final DataOutputStream dataOutputStream;
+class ClientHandler extends Thread {
+    private final InputStream inputStream;
+    private final OutputStream outputStream;
     private final Socket socket;
 
 
     // Constructor
-    ClientHandler(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream)
-    {
+    ClientHandler(Socket socket, InputStream inputStream, OutputStream outputStream) {
         this.socket = socket;
-        this.dataInputStream = dataInputStream;
-        this.dataOutputStream = dataOutputStream;
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
     }
 
     @Override
-    public void run()
-    {
-        String input;
+    public void run() {
+        String fileName;
         String output;
-        while (true)
-        {
+        while (true) {
             try {
 
+                PrintWriter printWriter = new PrintWriter(outputStream, true);
+
                 // Ask user what he wants
-                dataOutputStream.writeUTF("Which file do you want?..\n"+
+                printWriter.println("Which file do you want?..\n" +
                         "Type Exit to terminate connection.");
 
-                // receive the answer from client
-                input = dataInputStream.readUTF();
+                BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream));
 
-                if(input.equals("Exit"))
-                {
+                // receive the answer from client
+                fileName = fileReader.readLine();
+
+                if (fileName.equals("Exit")) {
                     System.out.println("Client " + this.socket + " is exiting...");
                     System.out.println("Closing this connection.");
                     this.socket.close();
+                    printWriter.close();
+                    fileReader.close();
                     System.out.println("Connection closed");
                     break;
                 }
 
-                // creating Date object
-                Date date = new Date();
+                BufferedReader outputReader = new BufferedReader(new FileReader(fileName));
 
-                // write on output stream based on the
-                // answer from the client
-                switch (input) {
 
-                    case "Date" :
-                        output = dateFormat.format(date);
-                        dataOutputStream.writeUTF(output);
-                        break;
-
-                    case "Time" :
-                        output = timeFormat.format(date);
-                        dataOutputStream.writeUTF(output);
-                        break;
-
-                    default:
-                        dataOutputStream.writeUTF("Getting file " + input + "...");
-                        try{
-                            sendFile(input);
-                        }catch(Exception e){
-                            dataOutputStream.writeUTF("This file is not accessible:\n");
-                            e.printStackTrace();
-                        }
-                        break;
+                while ((output = outputReader.readLine()) != null) {
+                    printWriter.println(output);
                 }
+
+                outputReader.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        try
-        {
+        try {
             // closing resources
-            this.dataInputStream.close();
-            this.dataOutputStream.close();
+            this.inputStream.close();
+            this.outputStream.close();
 
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void sendFile(String fileName){
-
     }
 }
