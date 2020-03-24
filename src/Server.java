@@ -78,7 +78,7 @@ class ClientHandler extends Thread
             try {
 
                 // Ask user what he wants
-                dos.writeUTF("What do you want?[Date | Time]..\n"+
+                dos.writeUTF("Which file do you want?..\n"+
                         "Type Exit to terminate connection.");
 
                 // receive the answer from client
@@ -111,7 +111,8 @@ class ClientHandler extends Thread
                         break;
 
                     default:
-                        dos.writeUTF("Invalid input");
+                        dos.writeUTF("Getting file " + received + "...");
+                        dos.writeUTF("This file is not accessible");
                         break;
                 }
             } catch (IOException e) {
