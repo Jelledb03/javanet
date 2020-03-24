@@ -12,7 +12,7 @@ public class Server
     public static void main(String[] args) throws IOException
     {
         // server is listening on port 5056
-        ServerSocket serverSocket = new ServerSocket(5056);
+        ServerSocket serverSocket = new ServerSocket(5000);
 
         // running infinite loop for getting
         // client request
@@ -92,6 +92,8 @@ class ClientHandler extends Thread
 
                 dataOutputStream.writeUTF("Ingegeven door Client: " + filename);
 
+                /*
+
                 BufferedReader outputReader = new BufferedReader(new FileReader(filename));
 
                 while ((output = outputReader.readLine()) != null) {
@@ -99,6 +101,8 @@ class ClientHandler extends Thread
                 }
 
                 outputReader.close();
+
+                */
 
             } catch (IOException e) {
                 e.printStackTrace();
