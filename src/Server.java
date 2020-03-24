@@ -13,6 +13,9 @@ public class Server
     {
         // server is listening on port 5056
         ServerSocket serverSocket = new ServerSocket(5000);
+        System.out.println("Server started");
+
+        System.out.println("Waiting for a client ...");
 
         // running infinite loop for getting
         // client request
