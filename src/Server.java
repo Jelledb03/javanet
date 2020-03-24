@@ -1,24 +1,15 @@
-// Java implementation of Server side
-// It contains two classes : Server and ClientHandler
-// Save file as Server.java
-
 import java.io.*;
-import java.util.*;
 import java.net.*;
 
-// Server class
 public class Server
 {
     public static void main(String[] args) throws IOException
     {
-        // server is listening on port 5056
         ServerSocket serverSocket = new ServerSocket(5000);
         System.out.println("Server started");
 
         System.out.println("Waiting for a client ...");
 
-        // running infinite loop for getting
-        // client request
         while (true)
         {
             Socket socket = null;
@@ -41,9 +32,9 @@ public class Server
 
                 // Invoking the start() method
                 thread.start();
-
             }
             catch (Exception e){
+                //Close socket here too
                 socket.close();
                 e.printStackTrace();
             }
@@ -51,16 +42,15 @@ public class Server
     }
 }
 
-// ClientHandler class
+
 class ClientHandler extends Thread
 {
-    final DataInputStream dataInputStream;
-    final DataOutputStream dataOutputStream;
-    final Socket socket;
+    private final DataInputStream dataInputStream;
+    private final DataOutputStream dataOutputStream;
+    private final Socket socket;
 
 
-    // Constructor
-    public ClientHandler(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream)
+    ClientHandler(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream)
     {
         this.socket = socket;
         this.dataInputStream = dataInputStream;
@@ -76,14 +66,14 @@ class ClientHandler extends Thread
         {
             try {
 
-                // Ask user what he wants
                 dataOutputStream.writeUTF("What do you want to send..\n"+
                         "Type Exit to terminate connection.");
 
-                // receive the answer from client
+                // Get filename from client
                 filename = dataInputStream.readUTF();
                 System.out.println(filename);
 
+                //break out of while loop and close socket
                 if(filename.equals("Exit"))
                 {
                     System.out.println("Client " + this.socket + " sends exit...");
@@ -104,7 +94,7 @@ class ClientHandler extends Thread
 
         try
         {
-            // closing resources
+            // close input and output
             this.dataInputStream.close();
             this.dataOutputStream.close();
 

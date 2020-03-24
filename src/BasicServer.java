@@ -1,53 +1,49 @@
-// A Java program for a Server 
-
 import java.net.*;
 import java.io.*;
 
 public class BasicServer {
-
-    // constructor with port 
     public static void main(String[] args) {
-        // starts server and waits for a connection
+
         try {
             ServerSocket server = new ServerSocket(5000);
             System.out.println("Server started");
 
             System.out.println("Waiting for a client ...");
 
-            //initialize socket and input stream
+            //socket
             Socket socket = server.accept();
             System.out.println("Client accepted");
 
+            //input and output stream
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             while (true) {
                 try {
 
-                    // Ask user what he wants
                     dataOutputStream.writeUTF("What do you want to send..\n" +
                             "Type Exit to terminate connection.");
 
-                    // receive the answer from client
+                    // get filename from client
                     String filename = dataInputStream.readUTF();
                     System.out.println(filename);
 
+                    //break out of while loop
                     if (filename.equals("Exit")) {
-                        System.out.println("Client " + socket + " sends exit...");
-                        System.out.println("Closing this connection.");
-                        //socket.close();
-                        System.out.println("Connection closed");
+                        System.out.println("Client sends exit...");
                         break;
                     }
 
-                    dataOutputStream.writeUTF("Ingegeven door Client: " + filename);
+                    dataOutputStream.writeUTF("Entered by Client: " + filename);
 
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            System.out.println("Closing connection");
+
+
             // close connection
+            System.out.println("Closing connection");
             socket.close();
             dataInputStream.close();
             dataOutputStream.close();
