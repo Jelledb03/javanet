@@ -41,28 +41,7 @@ public class Client {
 
                 // printing date or time as requested by client
                 String received = dataInputStream.readUTF();
-
-                while (!(received = dataInputStream.readUTF()).equals("")) {
-                    System.out.println(received);
-                    try {
-                        File file = new File("testje.txt");
-                        if (file.createNewFile()) {
-                            System.out.println("File created");
-                        } else {
-                            System.out.println("File already exists.");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    try{
-                        FileWriter fileWriter = new FileWriter("testje.txt");
-                        fileWriter.write(received);
-                        fileWriter.close();
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
-                System.out.println("Finished writing file: " + filename);
+                System.out.println(received);
             }
 
             // closing resources
