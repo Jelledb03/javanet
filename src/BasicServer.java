@@ -20,34 +20,40 @@ public class BasicServer {
 
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
-            String filename;
-            boolean stopConnection = false;
-            do{
+            while (true) {
                 try {
 
+                    // Ask user what he wants
                     dataOutputStream.writeUTF("What do you want to send..\n" +
                             "Type Exit to terminate connection.");
 
-                    filename = dataInputStream.readUTF();
+                    // receive the answer from client
+                    String filename = dataInputStream.readUTF();
                     System.out.println(filename);
 
                     if (filename.equals("Exit")) {
-                        stopConnection = true;
+                        System.out.println("Client " + socket + " sends exit...");
+                        System.out.println("Closing this connection.");
+                        //socket.close();
+                        System.out.println("Connection closed");
+                        break;
                     }
+
+                    dataOutputStream.writeUTF("Ingegeven door Client: " + filename);
+
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }while(!stopConnection);
 
-            System.out.println("Closing connection");
+                System.out.println("Closing connection");
 
-            // close connection
-            socket.close();
-            dataInputStream.close();
-            dataOutputStream.close();
-            System.out.println("Closed connection");
+                // close connection
+                socket.close();
+                dataInputStream.close();
+                dataOutputStream.close();
+                System.out.println("Closed connection");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
