@@ -91,6 +91,14 @@ class ClientHandler extends Thread
 
                 dataOutputStream.writeUTF("Ingegeven door Client: " + filename);
 
+                BufferedReader outputReader = new BufferedReader(new FileReader(filename));
+
+                while ((output = outputReader.readLine()) != null) {
+                    dataOutputStream.writeUTF(output);
+                }
+
+                outputReader.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
