@@ -45,15 +45,13 @@ public class BasicServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                System.out.println("Closing connection");
-
-                // close connection
-                socket.close();
-                dataInputStream.close();
-                dataOutputStream.close();
-                System.out.println("Closed connection");
             }
+            System.out.println("Closing connection");
+            // close connection
+            socket.close();
+            dataInputStream.close();
+            dataOutputStream.close();
+            System.out.println("Closed connection");
         } catch (IOException e) {
             e.printStackTrace();
         }
