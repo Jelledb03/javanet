@@ -29,11 +29,15 @@ public class Client
             {
                 System.out.println(dataInputStream.readUTF());
 
+                //System.out.println(dataInputStream.readUTF());
+
                 //Sending file name to server with PrintWriter
                 String filename = scanner.nextLine();
-                OutputStream outputStream = socket.getOutputStream();
-                PrintWriter printWriter = new PrintWriter(outputStream, true);
-                printWriter.println(filename);
+                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                //PrintWriter printWriter = new PrintWriter(outputStream, true);
+
+                outputStream.writeUTF(filename);
+                //printWriter.println(filename);
                 //dos.writeUTF(filename);
 
                 // If client sends exit,close this connection
@@ -42,6 +46,7 @@ public class Client
                 {
                     System.out.println("Closing this connection : " + socket);
                     socket.close();
+                    outputStream.close();
                     System.out.println("Connection closed");
                     break;
                 }
@@ -52,7 +57,8 @@ public class Client
                 while((textFromFile = serverBufferedReader.readLine()) != null){
                     System.out.println(textFromFile);
                 }
-                printWriter.close();
+                //printWriter.close();
+                serverBufferedReader.close();
             }
 
             // closing resources

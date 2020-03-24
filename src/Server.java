@@ -64,10 +64,10 @@ class ClientHandler extends Thread {
 
                 outputStream.writeUTF("Testje");
 
-                PrintWriter printWriter = new PrintWriter(outputStream, true);
+                //PrintWriter printWriter = new PrintWriter(outputStream, true);
 
                 // Ask user what he wants
-                printWriter.println("Which file do you want?..\n" +
+                outputStream.writeUTF("Which file do you want?..\n" +
                         "Type Exit to terminate connection.");
 
                 BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -79,7 +79,6 @@ class ClientHandler extends Thread {
                     System.out.println("Client " + this.socket + " is exiting...");
                     System.out.println("Closing this connection.");
                     this.socket.close();
-                    printWriter.close();
                     fileReader.close();
                     System.out.println("Connection closed");
                     break;
@@ -89,7 +88,8 @@ class ClientHandler extends Thread {
 
 
                 while ((output = outputReader.readLine()) != null) {
-                    printWriter.println(output);
+                    //printWriter.println(output);
+                    outputStream.writeUTF(output);
                 }
 
                 outputReader.close();
