@@ -1,64 +1,56 @@
-
+// Java implementation for a client
+// Save file as Client.java
 
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+// Client class
 public class Client
 {
     public static void main(String[] args) throws IOException
     {
         try
         {
-            Scanner scanner = new Scanner(System.in);
+            Scanner scn = new Scanner(System.in);
 
             // getting localhost ip
-            InetAddress ipaddress = InetAddress.getByName("localhost");
+            InetAddress ip = InetAddress.getByName("localhost");
 
             // establish the connection with server port 5056
-            Socket socket = new Socket(ipaddress, 5000);
+            Socket s = new Socket(ip, 5056);
 
-            // creating bufferedReader(for filename) & inputStream from Server
-            BufferedReader clientBufferReader = new BufferedReader(new InputStreamReader(System.in));
-            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            BufferedReader serverBufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
+            // obtaining input and out streams
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+
             // the following loop performs the exchange of
             // information between client and client handler
             while (true)
             {
-                System.out.println(dataInputStream.readUTF());
-
-                //System.out.println(dataInputStream.readUTF());
-
-                //Sending file name to server with PrintWriter
-                String filename = scanner.nextLine();
-
-                dataOutputStream.writeUTF(filename);
+                System.out.println(dis.readUTF());
+                String tosend = scn.nextLine();
+                dos.writeUTF(tosend);
 
                 // If client sends exit,close this connection
                 // and then break from the while loop
-                if(filename.equals("Exit"))
+                if(tosend.equals("Exit"))
                 {
-                    System.out.println("Closing this connection : " + socket);
-                    socket.close();
+                    System.out.println("Closing this connection : " + s);
+                    s.close();
                     System.out.println("Connection closed");
                     break;
                 }
-                // recieve content from file from server
-                String textFromFile;
-                while((textFromFile = serverBufferedReader.readLine()) != null){
-                    System.out.println(textFromFile);
-                }
+
+                // printing date or time as requested by client
+                String received = dis.readUTF();
+                System.out.println(received);
             }
 
             // closing resources
-            scanner.close();
-            clientBufferReader.close();
-            serverBufferedReader.close();
-            dataInputStream.close();
-            dataOutputStream.close();
-
+            scn.close();
+            dis.close();
+            dos.close();
         }catch(Exception e){
             e.printStackTrace();
         }

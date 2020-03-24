@@ -1,39 +1,48 @@
+// Java implementation of Server side
+// It contains two classes : Server and ClientHandler
+// Save file as Server.java
 
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.net.*;
 
-public class Server {
-    public static void main(String[] args) throws IOException {
+// Server class
+public class Server
+{
+    public static void main(String[] args) throws IOException
+    {
         // server is listening on port 5056
-        ServerSocket serverSocket = new ServerSocket(5000);
+        ServerSocket ss = new ServerSocket(5056);
 
         // running infinite loop for getting
         // client request
-        while (true) {
-            Socket socket = null;
+        while (true)
+        {
+            Socket s = null;
 
-            try {
+            try
+            {
                 // socket object to receive incoming client requests
-                socket = serverSocket.accept();
+                s = ss.accept();
 
-                System.out.println("A new client is connected: " + socket);
+                System.out.println("A new client is connected : " + s);
 
                 // obtaining input and out streams
-                DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream dis = new DataInputStream(s.getInputStream());
+                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
-                System.out.println("Creating new Thread for new Client...");
+                System.out.println("Assigning new thread for this client");
 
                 // create a new thread object
-                Thread thread = new ClientHandler(socket, inputStream, outputStream);
+                Thread t = new ClientHandler(s, dis, dos);
 
                 // Invoking the start() method
-                thread.start();
+                t.start();
 
-            } catch (Exception e) {
-                socket.close();
+            }
+            catch (Exception e){
+                s.close();
                 e.printStackTrace();
             }
         }
@@ -41,68 +50,81 @@ public class Server {
 }
 
 // ClientHandler class
-class ClientHandler extends Thread {
-    private final DataInputStream inputStream;
-    private final DataOutputStream outputStream;
-    private final Socket socket;
+class ClientHandler extends Thread
+{
+    DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd");
+    DateFormat fortime = new SimpleDateFormat("hh:mm:ss");
+    final DataInputStream dis;
+    final DataOutputStream dos;
+    final Socket s;
 
 
     // Constructor
-    ClientHandler(Socket socket, DataInputStream inputStream, DataOutputStream outputStream) {
-        this.socket = socket;
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
+    public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos)
+    {
+        this.s = s;
+        this.dis = dis;
+        this.dos = dos;
     }
 
     @Override
-    public void run() {
-        String fileName;
-        String output;
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream));
-        while (true) {
+    public void run()
+    {
+        String received;
+        String toreturn;
+        while (true)
+        {
             try {
 
-                outputStream.writeUTF("Testje");
-
-                //PrintWriter printWriter = new PrintWriter(outputStream, true);
-
                 // Ask user what he wants
-                outputStream.writeUTF("Which file do you want?..\n" +
+                dos.writeUTF("What do you want?[Date | Time]..\n"+
                         "Type Exit to terminate connection.");
 
                 // receive the answer from client
-                fileName = fileReader.readLine();
+                received = dis.readUTF();
 
-                if (fileName.equals("Exit")) {
-                    System.out.println("Client " + this.socket + " is exiting...");
+                if(received.equals("Exit"))
+                {
+                    System.out.println("Client " + this.s + " sends exit...");
                     System.out.println("Closing this connection.");
-                    this.socket.close();
+                    this.s.close();
                     System.out.println("Connection closed");
                     break;
                 }
 
-                BufferedReader outputReader = new BufferedReader(new FileReader(fileName));
+                // creating Date object
+                Date date = new Date();
 
+                // write on output stream based on the
+                // answer from the client
+                switch (received) {
 
-                while ((output = outputReader.readLine()) != null) {
-                    //printWriter.println(output);
-                    outputStream.writeUTF(output);
+                    case "Date" :
+                        toreturn = fordate.format(date);
+                        dos.writeUTF(toreturn);
+                        break;
+
+                    case "Time" :
+                        toreturn = fortime.format(date);
+                        dos.writeUTF(toreturn);
+                        break;
+
+                    default:
+                        dos.writeUTF("Invalid input");
+                        break;
                 }
-
-                outputReader.close();
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        try {
+        try
+        {
             // closing resources
-            fileReader.close();
-            this.inputStream.close();
-            this.outputStream.close();
+            this.dis.close();
+            this.dos.close();
 
-        } catch (IOException e) {
+        }catch(IOException e){
             e.printStackTrace();
         }
     }
