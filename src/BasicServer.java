@@ -6,10 +6,10 @@ import java.io.*;
 public class BasicServer {
 
     // constructor with port 
-    public BasicServer(int port) {
+    public static void main(String[] args) {
         // starts server and waits for a connection
         try {
-            ServerSocket server = new ServerSocket(port);
+            ServerSocket server = new ServerSocket(5000);
             System.out.println("Server started");
 
             System.out.println("Waiting for a client ...");
@@ -55,9 +55,5 @@ public class BasicServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        BasicServer server = new BasicServer(5000);
     }
 }
