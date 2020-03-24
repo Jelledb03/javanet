@@ -45,9 +45,9 @@ public class Client {
                 while (!(received = dataInputStream.readUTF()).equals("")) {
                     System.out.println(received);
                     try {
-                        File file = new File(filename);
+                        File file = new File("testje.txt");
                         if (file.createNewFile()) {
-                            System.out.println("File created: " + file.getName());
+                            System.out.println("File created");
                         } else {
                             System.out.println("File already exists.");
                         }
@@ -55,7 +55,7 @@ public class Client {
                         e.printStackTrace();
                     }
                     try{
-                        FileWriter fileWriter = new FileWriter(filename);
+                        FileWriter fileWriter = new FileWriter("testje.txt");
                         fileWriter.write(received);
                         fileWriter.close();
                     } catch (IOException e){
