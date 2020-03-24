@@ -13,37 +13,37 @@ public class Server
     public static void main(String[] args) throws IOException
     {
         // server is listening on port 5056
-        ServerSocket ss = new ServerSocket(5000);
+        ServerSocket serverSocket = new ServerSocket(5000);
 
         // running infinite loop for getting
         // client request
         while (true)
         {
-            Socket s = null;
+            Socket socket = null;
 
             try
             {
                 // socket object to receive incoming client requests
-                s = ss.accept();
+                socket = serverSocket.accept();
 
-                System.out.println("A new client is connected : " + s);
+                System.out.println("A new client is connected: " + socket);
 
                 // obtaining input and out streams
-                DataInputStream dis = new DataInputStream(s.getInputStream());
-                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-                System.out.println("Assigning new thread for this client");
+                System.out.println("Creating new Thread for new Client...");
 
                 // create a new thread object
-                Thread t = new ClientHandler(s, dis, dos);
+                Thread thread = new ClientHandler(socket, dataInputStream, dataOutputStream);
 
                 // Invoking the start() method
-                t.start();
+                thread.start();
 
             }
             catch (Exception e){
-                assert s != null;
-                s.close();
+                assert socket != null;
+                socket.close();
                 e.printStackTrace();
             }
         }
@@ -53,42 +53,42 @@ public class Server
 // ClientHandler class
 class ClientHandler extends Thread
 {
-    private DateFormat fordate = new SimpleDateFormat("yyyy/MM/dd");
-    private DateFormat fortime = new SimpleDateFormat("hh:mm:ss");
-    private final DataInputStream dis;
-    private final DataOutputStream dos;
-    private final Socket s;
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    private DateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
+    private final DataInputStream dataInputStream;
+    private final DataOutputStream dataOutputStream;
+    private final Socket socket;
 
 
     // Constructor
-    ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos)
+    ClientHandler(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream)
     {
-        this.s = s;
-        this.dis = dis;
-        this.dos = dos;
+        this.socket = socket;
+        this.dataInputStream = dataInputStream;
+        this.dataOutputStream = dataOutputStream;
     }
 
     @Override
     public void run()
     {
-        String received;
-        String toreturn;
+        String input;
+        String output;
         while (true)
         {
             try {
 
                 // Ask user what he wants
-                dos.writeUTF("Which file do you want?..\n"+
+                dataOutputStream.writeUTF("Which file do you want?..\n"+
                         "Type Exit to terminate connection.");
 
                 // receive the answer from client
-                received = dis.readUTF();
+                input = dataInputStream.readUTF();
 
-                if(received.equals("Exit"))
+                if(input.equals("Exit"))
                 {
-                    System.out.println("Client " + this.s + " sends exit...");
+                    System.out.println("Client " + this.socket + " is exiting...");
                     System.out.println("Closing this connection.");
-                    this.s.close();
+                    this.socket.close();
                     System.out.println("Connection closed");
                     break;
                 }
@@ -98,21 +98,26 @@ class ClientHandler extends Thread
 
                 // write on output stream based on the
                 // answer from the client
-                switch (received) {
+                switch (input) {
 
                     case "Date" :
-                        toreturn = fordate.format(date);
-                        dos.writeUTF(toreturn);
+                        output = dateFormat.format(date);
+                        dataOutputStream.writeUTF(output);
                         break;
 
                     case "Time" :
-                        toreturn = fortime.format(date);
-                        dos.writeUTF(toreturn);
+                        output = timeFormat.format(date);
+                        dataOutputStream.writeUTF(output);
                         break;
 
                     default:
-                        dos.writeUTF("Getting file " + received + "...");
-                        dos.writeUTF("This file is not accessible");
+                        dataOutputStream.writeUTF("Getting file " + input + "...");
+                        try{
+                            sendFile(input);
+                        }catch(Exception e){
+                            dataOutputStream.writeUTF("This file is not accessible:\n");
+                            e.printStackTrace();
+                        }
                         break;
                 }
             } catch (IOException e) {
@@ -123,11 +128,15 @@ class ClientHandler extends Thread
         try
         {
             // closing resources
-            this.dis.close();
-            this.dos.close();
+            this.dataInputStream.close();
+            this.dataOutputStream.close();
 
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void sendFile(String fileName){
+
     }
 }
