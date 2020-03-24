@@ -33,7 +33,6 @@ public class Server {
                 thread.start();
 
             } catch (Exception e) {
-                assert socket != null;
                 socket.close();
                 e.printStackTrace();
             }

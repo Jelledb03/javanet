@@ -22,7 +22,7 @@ public class Client
             BufferedReader clientBufferReader = new BufferedReader(new InputStreamReader(System.in));
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
+            BufferedReader serverBufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
             // the following loop performs the exchange of
             // information between client and client handler
             while (true)
@@ -45,22 +45,19 @@ public class Client
                     System.out.println("Connection closed");
                     break;
                 }
-
                 // recieve content from file from server
-                BufferedReader serverBufferedReader = new BufferedReader(new InputStreamReader(dataInputStream));
                 String textFromFile;
                 while((textFromFile = serverBufferedReader.readLine()) != null){
                     System.out.println(textFromFile);
                 }
-                //printWriter.close();
-                serverBufferedReader.close();
             }
 
             // closing resources
             scanner.close();
+            clientBufferReader.close();
+            serverBufferedReader.close();
             dataInputStream.close();
             dataOutputStream.close();
-            clientBufferReader.close();
 
         }catch(Exception e){
             e.printStackTrace();
