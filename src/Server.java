@@ -1,13 +1,9 @@
-// Java implementation of  Server side
-// It contains two classes : Server and ClientHandler
-// Save file as Server.java
 
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.net.*;
 
-// Server class
 public class Server {
     public static void main(String[] args) throws IOException {
         // server is listening on port 5056
@@ -25,8 +21,8 @@ public class Server {
                 System.out.println("A new client is connected: " + socket);
 
                 // obtaining input and out streams
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
+                DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
 
                 System.out.println("Creating new Thread for new Client...");
 
@@ -47,13 +43,13 @@ public class Server {
 
 // ClientHandler class
 class ClientHandler extends Thread {
-    private final InputStream inputStream;
-    private final OutputStream outputStream;
+    private final DataInputStream inputStream;
+    private final DataOutputStream outputStream;
     private final Socket socket;
 
 
     // Constructor
-    ClientHandler(Socket socket, InputStream inputStream, OutputStream outputStream) {
+    ClientHandler(Socket socket, DataInputStream inputStream, DataOutputStream outputStream) {
         this.socket = socket;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
@@ -65,6 +61,8 @@ class ClientHandler extends Thread {
         String output;
         while (true) {
             try {
+
+                outputStream.writeUTF("Testje");
 
                 PrintWriter printWriter = new PrintWriter(outputStream, true);
 

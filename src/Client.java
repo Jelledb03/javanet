@@ -1,11 +1,9 @@
-// Java implementation for a client
-// Save file as Client.java
+
 
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-// Client class
 public class Client
 {
     public static void main(String[] args) throws IOException
