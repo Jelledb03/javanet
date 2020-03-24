@@ -79,6 +79,7 @@ class ClientHandler extends Thread
 
                 // receive the answer from client
                 filename = dataInputStream.readUTF();
+                System.out.println(filename);
 
                 if(filename.equals("Exit"))
                 {
