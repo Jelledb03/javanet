@@ -33,11 +33,8 @@ public class Client
 
                 //Sending file name to server with PrintWriter
                 String filename = scanner.nextLine();
-                //PrintWriter printWriter = new PrintWriter(outputStream, true);
 
                 dataOutputStream.writeUTF(filename);
-                //printWriter.println(filename);
-                //dos.writeUTF(filename);
 
                 // If client sends exit,close this connection
                 // and then break from the while loop
