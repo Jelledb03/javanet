@@ -21,7 +21,7 @@ public class Client
             // creating bufferedReader(for filename) & inputStream from Server
             BufferedReader clientBufferReader = new BufferedReader(new InputStreamReader(System.in));
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            //DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
             // the following loop performs the exchange of
             // information between client and client handler
@@ -33,10 +33,9 @@ public class Client
 
                 //Sending file name to server with PrintWriter
                 String filename = scanner.nextLine();
-                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
                 //PrintWriter printWriter = new PrintWriter(outputStream, true);
 
-                outputStream.writeUTF(filename);
+                dataOutputStream.writeUTF(filename);
                 //printWriter.println(filename);
                 //dos.writeUTF(filename);
 
@@ -46,7 +45,6 @@ public class Client
                 {
                     System.out.println("Closing this connection : " + socket);
                     socket.close();
-                    outputStream.close();
                     System.out.println("Connection closed");
                     break;
                 }
@@ -64,6 +62,7 @@ public class Client
             // closing resources
             scanner.close();
             dataInputStream.close();
+            dataOutputStream.close();
             clientBufferReader.close();
 
         }catch(Exception e){
