@@ -21,23 +21,25 @@ public class BasicServer {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-            while (true) {
+            String filename;
+            boolean stopConnection = false;
+            do{
                 try {
 
                     dataOutputStream.writeUTF("What do you want to send..\n" +
                             "Type Exit to terminate connection.");
 
-                    String filename = dataInputStream.readUTF();
+                    filename = dataInputStream.readUTF();
                     System.out.println(filename);
 
                     if (filename.equals("Exit")) {
-                        break;
+                        stopConnection = true;
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }while(!stopConnection);
 
             System.out.println("Closing connection");
 
