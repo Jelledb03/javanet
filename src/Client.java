@@ -44,7 +44,10 @@ public class Client
 
                 // printing date or time as requested by client
                 String received = dataInputStream.readUTF();
-                System.out.println(received);
+
+                while(!(received = dataInputStream.readUTF()).equals("")){
+                    System.out.println(received);
+                }
             }
 
             // closing resources
