@@ -1,70 +1,58 @@
-// A Java program for a Client
-import java.net.*;
-import java.io.*;
+// Java implementation for a client
+// Save file as Client.java
 
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+// Client class
 public class Client
 {
-    // initialize socket and input output streams
-    private Socket socket		 = null;
-    private DataInputStream input = null;
-    private DataOutputStream out	 = null;
-
-    // constructor to put ip address and port
-    public Client(String address, int port)
+    public static void main(String[] args) throws IOException
     {
-        // establish a connection
         try
         {
-            socket = new Socket(address, port);
-            System.out.println("Connected");
+            Scanner scn = new Scanner(System.in);
 
-            // takes input from terminal
-            input = new DataInputStream(System.in);
+            // getting localhost ip
+            InetAddress ip = InetAddress.getByName("localhost");
 
-            // sends output to the socket
-            out = new DataOutputStream(socket.getOutputStream());
-        }
-        catch(UnknownHostException u)
-        {
-            System.out.println(u);
-        }
-        catch(IOException i)
-        {
-            System.out.println(i);
-        }
+            // establish the connection with server port 5056
+            Socket s = new Socket(ip, 5056);
 
-        // string to read message from input
-        String line = "";
+            // obtaining input and out streams
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 
-        // keep reading until "Over" is input
-        while (!line.equals("Over"))
-        {
-            try
+            // the following loop performs the exchange of
+            // information between client and client handler
+            while (true)
             {
-                line = input.readLine();
-                out.writeUTF(line);
-            }
-            catch(IOException i)
-            {
-                System.out.println(i);
-            }
-        }
+                System.out.println(dis.readUTF());
+                String tosend = scn.nextLine();
+                dos.writeUTF(tosend);
 
-        // close the connection
-        try
-        {
-            input.close();
-            out.close();
-            socket.close();
-        }
-        catch(IOException i)
-        {
-            System.out.println(i);
-        }
-    }
+                // If client sends exit,close this connection
+                // and then break from the while loop
+                if(tosend.equals("Exit"))
+                {
+                    System.out.println("Closing this connection : " + s);
+                    s.close();
+                    System.out.println("Connection closed");
+                    break;
+                }
 
-    public static void main(String args[])
-    {
-        Client client = new Client("127.0.0.1", 5000);
+                // printing date or time as requested by client
+                String received = dis.readUTF();
+                System.out.println(received);
+            }
+
+            // closing resources
+            scn.close();
+            dis.close();
+            dos.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
