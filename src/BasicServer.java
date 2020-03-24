@@ -24,9 +24,8 @@ public class BasicServer {
             while (true) {
                 try {
 
-
-                    dataOutputStream.writeUTF("What do you want to send..\n" +
-                            "Type Exit to terminate connection.");
+                    //dataOutputStream.writeUTF("What do you want to send..\n" +
+                    //        "Type Exit to terminate connection.");
 
                     String filename = dataInputStream.readUTF();
                     System.out.println(filename);
